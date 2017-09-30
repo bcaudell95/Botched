@@ -15,7 +15,7 @@ class BasicBot:
         self._oauth = oauth
 
         self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print("connecting to:{}".format(self._server))
+        self.log("connecting to:{}".format(self._server))
 
     def __enter__(self):
         self.connect()
@@ -34,7 +34,7 @@ class BasicBot:
 
     def main_loop(self):
         text = self._irc.recv(2040).decode()
-        print("{}\n".format(text))
+        self.log("{}\n".format(text))
 
         if 'PING' in text:
             self._irc.send('PONG {}\r\n'.format(text.split()[1]).encode())
@@ -42,11 +42,13 @@ class BasicBot:
             user, msg = text.split('PRIVMSG')[1].split(':')
             user = user[2:]
             msg = msg[:-2]
-            print("Found message: {} from {}".format(msg, user))
+            self.log("Found message: {} from {}".format(msg, user))
 
     def disconnect(self):
         self._irc.send("PART {}".format(self._channel))
 
+    def log(self, message):
+        print(message)
 
 def main():
     channel = "#bcaudell95"
